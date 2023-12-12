@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  version: '1.1.0'
+  title: File API
+security:
+  - basicAuth: []
+servers:
+  - url: http://localhost:6011
+paths:
+  /status:
+    get:
+      summary: Status
+      description: Get Status.
+      responses:
+        '200':
+          description: It's a response.
+  /files:
+    post:
+      summary: Upload File
+      description: Upload a file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  required: true
+                  type: string
+                  description: The name of the file.
+                fileContentType:
+                  required: true
+                  type: string
+                  description: The content type of the file.
+                meta:
+                  required: true
+                  type: object
+                  description: Additional metadata for the file.
+                source:
+                  required: true
+                  type: string
+                  description: The source of the file.
+                expireTime:
+                  required: false
+                  type: string
+                  format: date-time
+                  description: The expiration time of the file.
+                content:
+                  required: true
+                  type: string
+                  format: binary
+                  description: The content of the file.
+      responses:
+        '201':
+          description: File uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileId:
+                    type: string
+                    description: The ID of the uploaded file.
+        '400':
+          description: Bad request. Invalid input or missing required fields.
+        '503':
+          description: Service unavailable. An error occurred during file upload.
+  /files/{id}:
+    get:
+      summary: Get File
+      description: Get information about a specific file.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the file.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileId:
+                    type: string
+                    description: The ID of the file.
+                  name:
+                    type: string
+                    description: The name of the file.
+                  fileContentType:
+                    type: string
+                    description: The content type of the file.
+                  meta:
+                    type: object
+                    description: Additional metadata for the file.
+                  source:
+                    type: string
+                    description: The source of the file.
+                  expireTime:
+                    type: string
+                    format: date-time
+                    description: The expiration time of the file.
+        '404':
+          description: File not found. The specified file ID does not exist.
+    delete:
+      summary: Delete File
+      description: Delete a specific file.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the file.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully.
+        '404':
+          description: File not found. The specified file ID does not exist.
+        '503':
+          description: Service unavailable. An error occurred during file deletion.
+  /files/all:
+    get:
+      summary: Get All Files
+      description: Get information about all files.
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileMetaData'
+  /files/deleteAll:
+    delete:
+      summary: Delete All Files
+      description: Delete all files.
+      responses:
+        '200':
+          description: All files deleted successfully.
+        '503':
+          description: Service unavailable. An error occurred during file deletion.
+
+components:
+  schemas:
+    FileMetaData:
+      type: object
+      properties:
+        fileId:
+          type: string
+          description: The ID of the file.
+        name:
+          type: string
+          description: The name of the file.
+        fileContentType:
+          type: string
+          description: The content type of the file.
+        meta:
+          type: object
+          description: Additional metadata for the file.
+        source:
+          type: string
+          description: The source of the file.
+        expireTime:
+          type: string
+          format: date-time
+          description: The expiration time of the file.

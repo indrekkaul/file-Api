@@ -6,15 +6,15 @@ import java.io.StringWriter
 
 open class ExceptionLogItem constructor(
     message: String,
-    @JsonIgnore val exception: Exception
-) : LogItem("$message: <${exception::class.java.name}>") {
+    @JsonIgnore val throwable: Throwable
+) : LogItem("$message: <${throwable::class.java.name}>") {
     val stacktrace: String
 
     init {
         this.type = "exception"
 
         val stringWriter = StringWriter()
-        exception.printStackTrace(PrintWriter(stringWriter))
+        throwable.printStackTrace(PrintWriter(stringWriter))
         this.stacktrace = stringWriter.toString()
     }
 
